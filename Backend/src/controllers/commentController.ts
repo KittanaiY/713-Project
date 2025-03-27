@@ -3,34 +3,25 @@ import { AuthRequest } from '../middleware/authMiddleware';
 import { commentService } from '../services/commentService';
 
 export const commentController = {
-    addComment: async (req: AuthRequest, res: Response): Promise<void> => {
-        const { studentId, content, advisorId, senderId } = req.body; // Extract senderId from the request body
-        try {
-            const user = req.user!;
-            const senderRole: 'ADVISOR' | 'STUDENT' = user.role === 'ADVISOR' ? 'ADVISOR' : 'STUDENT';
-            const derivedSenderId = senderId || (senderRole === 'ADVISOR' ? user.id : user.studentId); // Derive senderId if not provided
+  addComment: async (req: AuthRequest, res: Response): Promise<void> => {
+    const { studentId, content, advisorId } = req.body;
+    try {
+      const user = req.user!;
+      const senderRole: 'ADVISOR' | 'STUDENT' = user.role;
+      const senderId = senderRole === 'ADVISOR' ? user.id : user.studentId;
 
-            // Log the incoming data and derived values
-            console.log('addComment request data:', {
-                studentId,
-                content,
-                advisorId,
-                senderId: derivedSenderId,
-                senderRole,
-            });
+      if (!senderId || !content || (senderRole === 'ADVISOR' && !studentId) || (senderRole === 'STUDENT' && !advisorId)) {
+        res.status(400).json({ error: 'Missing required fields' });
+        return;
+      }
 
-            if (!derivedSenderId || !content || (senderRole === 'ADVISOR' && !studentId) || (senderRole === 'STUDENT' && !advisorId)) {
-                res.status(400).json({ error: 'Missing required fields' });
-                return;
-            }
-
-            const comment = await commentService.addComment(derivedSenderId, content, senderRole, studentId, advisorId);
-            res.status(201).json(comment);
-        } catch (error) {
-            console.error('Error adding comment:', error);
-            res.status(500).json({ error: 'Error adding comment' });
-        }
-    },
+      const comment = await commentService.addComment(senderId, content, senderRole, studentId, advisorId);
+      res.status(201).json(comment);
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      res.status(500).json({ error: 'Error adding comment' });
+    }
+  },
     replyToComment: async (req: AuthRequest, res: Response): Promise<void> => {
         const { commentId, content } = req.body;
         try {

@@ -10,7 +10,7 @@ router.post(
     authenticateToken,
     authorizeRole(['ADVISOR', 'STUDENT']),
     commentController.addComment
-);
+  );
 // http://localhost:3000/comments/add-comment for post 
 // {
 //     "advisorId": 1,
@@ -19,7 +19,12 @@ router.post(
 // } 
 // add Bearer <token> for authorizations
 router.post('/reply-comment', authenticateToken, authorizeRole(['ADVISOR', 'STUDENT']), commentController.replyToComment);
-router.get('/comments', authenticateToken, authorizeRole(['ADVISOR', 'STUDENT']), commentController.getComments);
+router.get(
+    '/comments',
+    authenticateToken,
+    authorizeRole(['ADVISOR', 'STUDENT']),
+    commentController.getComments
+  );
 // http://localhost:3000/comments/comments
 // add Bearer <token> for authorizations
 router.put('/comments/:id', authenticateToken, authorizeRole(['ADVISOR', 'STUDENT']), commentController.updateComment);

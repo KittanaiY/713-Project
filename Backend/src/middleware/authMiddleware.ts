@@ -7,15 +7,15 @@ dotenv.config();
 // Extend Express Request type to include "user"
 export interface AuthRequest extends Request {
   user?: {
-      id: number; // Common for both roles
-      role: 'ADVISOR' | 'STUDENT'; // Role of the user
-      studentId?: string; // Optional, only for students
+    id: number; // Common for both roles
+    role: 'ADVISOR' | 'STUDENT'; // Role of the user
+    studentId?: string; // Optional, only for students
   };
 }
 
 export const authenticateToken = (
-  req: AuthRequest, 
-  res: Response, 
+  req: AuthRequest,
+  res: Response,
   next: NextFunction
 ): void => {
   const authHeader = req.headers['authorization'];
@@ -32,9 +32,8 @@ export const authenticateToken = (
       return;
     }
 
-    // Typecast decoded to include studentId if applicable
+    // Typecast decoded to match AuthRequest user type
     const user = decoded as { id: number; role: 'ADVISOR' | 'STUDENT'; studentId?: string };
-
     req.user = user; // Assign the decoded user to req.user
     next();
   });
