@@ -4,7 +4,7 @@
   "description": "A web application for students and advisors to connect, manage appointments, and share announcements.",
   "main": "src/index.ts",
   "scripts": {
-    "start": "ts-node src/sindex.ts",
+    "start": "ts-node src/index.ts",
     "dev": "nodemon",
     "build": "tsc",
     "lint": "eslint . --ext .ts",
