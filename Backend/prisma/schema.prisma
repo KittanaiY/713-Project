@@ -1,0 +1,83 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Admin {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
+  role     String @default("ADMIN")
+}
+
+model Advisor {
+  id             Int      @id @default(autoincrement())
+  username       String   @unique
+  password       String
+  firstName      String
+  lastName       String
+  profilePicture String?
+  department     String
+  position       String
+  role           String   @default("ADVISOR")
+  students       Student[]
+  comments       Comment[]
+  announcements  Announcement[]
+  appointments   Appointment[]
+}
+
+model Student {
+  studentId      String   @id
+  firstName      String
+  lastName       String
+  profilePicture String?
+  department     String
+  password       String
+  role           String   @default("STUDENT")
+  advisorId      Int
+  advisor        Advisor @relation(fields: [advisorId], references: [id])
+  comments       Comment[]
+  announcements  Announcement[]
+  appointments   Appointment[]
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  content    String
+  studentId  String
+  student    Student  @relation(fields: [studentId], references: [studentId])
+  advisorId  Int
+  advisor    Advisor  @relation(fields: [advisorId], references: [id])
+  parentId   Int?
+  parent     Comment? @relation("CommentReplies", fields: [parentId], references: [id])
+  replies    Comment[] @relation("CommentReplies")
+  senderRole String   // NEW: Indicates whether the sender is a "STUDENT" or "ADVISOR"
+}
+
+model Announcement {
+  id          Int      @id @default(autoincrement())
+  title       String
+  content     String
+  fileUrl     String
+  advisorId   Int
+  advisor     Advisor  @relation(fields: [advisorId], references: [id])
+  studentId   String
+  student     Student @relation(fields: [studentId], references: [studentId])
+  createdAt   DateTime @default(now())
+}
+
+model Appointment {
+  id            Int      @id @default(autoincrement())
+  subject       String
+  requestedDate DateTime
+  confirmedDate DateTime?
+  status        String   @default("PENDING")
+  studentId     String
+  student       Student  @relation(fields: [studentId], references: [studentId])
+  advisorId     Int
+  advisor       Advisor  @relation(fields: [advisorId], references: [id])
+}
