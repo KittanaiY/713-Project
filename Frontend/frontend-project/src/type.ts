@@ -34,6 +34,7 @@ export interface Student {
     comments: Comment[];
     announcements: Announcement[];
     appointments: Appointment[];
+    _custom?: any;
   }
   
 export interface Comment {
