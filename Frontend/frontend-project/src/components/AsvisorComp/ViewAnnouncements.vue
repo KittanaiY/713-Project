@@ -30,8 +30,9 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import type { Announcement } from '@/type'; // Import the Announcement type
 
-const announcements = ref([]);
+const announcements = ref<Announcement[]>([]); // Explicitly define the type as an array of Announcement
 const router = useRouter();
 
 const fetchAnnouncements = async () => {
@@ -41,7 +42,7 @@ const fetchAnnouncements = async () => {
         Authorization: `Bearer ${localStorage.getItem('authToken')}`, // Include the auth token
       },
     });
-    announcements.value = response.data;
+    announcements.value = response.data; // Populate the announcements list
   } catch (error) {
     console.error('Error fetching announcements:', error);
     alert('Failed to fetch announcements.');
