@@ -1,3 +1,33 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+import type { Announcement } from '@/type'; // Import the Announcement type
+
+const announcements = ref<Announcement[]>([]); // Explicitly define the type as an array of Announcement
+const router = useRouter();
+
+const fetchAnnouncements = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/announcements/announcements', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`, // Include the auth token
+      },
+    });
+    announcements.value = response.data; // Populate the announcements list
+  } catch (error) {
+    console.error('Error fetching announcements:', error);
+    alert('Failed to fetch announcements.');
+  }
+};
+
+const returnToDashboard = () => {
+  router.push('/student/dashboard'); // Redirect to the student dashboard
+};
+
+onMounted(fetchAnnouncements);
+</script>
+
 <template>
   <div>
     <h2>Announcements</h2>
@@ -11,35 +41,6 @@
     <button @click="returnToDashboard">Return to Student Dashboard</button>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-
-const announcements = ref([]);
-
-const fetchAnnouncements = async () => {
-  try {
-    const response = await axios.get('http://localhost:3000/announcements/announcements', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('authToken')}`
-      }
-    });
-    announcements.value = response.data;
-  } catch (error) {
-    console.error('Error fetching announcements:', error);
-  }
-};
-
-onMounted(fetchAnnouncements);
-
-const router = useRouter();
-
-const returnToDashboard = () => {
-  router.push('/student/dashboard'); // Replace with the actual route to the student dashboard
-};
-</script>
 
 <style scoped>
 ul {
