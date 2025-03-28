@@ -31,6 +31,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { useLoginStore } from '@/stores/login'; // Import the login store
+import type { Advisor } from '@/type'; // Import the Advisor type
 
 const title = ref('');
 const content = ref('');
@@ -39,10 +40,12 @@ const studentId = ref('');
 const router = useRouter();
 const loginStore = useLoginStore(); // Access the login store
 
+// Explicitly type the user object
+const advisor = loginStore.user as Advisor;
+
 const submitForm = async () => {
   try {
-    // Extract advisor details from the login store
-    const advisor = loginStore.user;
+    // Check if the user is an advisor
     if (!advisor || advisor.role !== 'ADVISOR') {
       alert('Unable to retrieve advisor information. Please log in again.');
       return;
