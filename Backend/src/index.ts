@@ -13,7 +13,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Define allowed origins for CORS
-const allowedOrigins = ['http://localhost:5173']; // Replace with your frontend's URL if different
+const allowedOrigins = ['http://localhost:5173','https://713-project-oqct.vercel.app']; // Replace with your frontend's URL if different
 
 const corsOptions: cors.CorsOptions = {
   origin: allowedOrigins,
