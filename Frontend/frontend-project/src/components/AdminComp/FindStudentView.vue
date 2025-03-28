@@ -43,37 +43,38 @@
   </template>
   
   <script setup lang="ts">
-  import { ref } from 'vue';
-  import axios from 'axios';
-  
-  const searchBy = ref('studentId'); // Default search by studentId
-  const searchValue = ref('');
-  const students = ref([]);
-  
-  const searchStudents = async () => {
-    try {
-      const token = localStorage.getItem('authToken');
-      const params: Record<string, string> = {};
-      params[searchBy.value] = searchValue.value;
-  
-      const response = await axios.get('http://localhost:3000/admin/search-students', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params,
-      });
-      students.value = response.data;
-    } catch (error) {
-      console.error('Error searching students:', error);
-    }
-  };
-  
-  const resetSearch = () => {
-    searchBy.value = 'studentId';
-    searchValue.value = '';
-    students.value = [];
-  };
-  </script>
+import { ref } from 'vue';
+import axios from 'axios';
+import type { Student } from '@/type'; // Import the Student type
+
+const searchBy = ref('studentId'); // Default search by studentId
+const searchValue = ref('');
+const students = ref<Student[]>([]); // Explicitly define the type as an array of Student
+
+const searchStudents = async () => {
+  try {
+    const token = localStorage.getItem('authToken');
+    const params: Record<string, string> = {};
+    params[searchBy.value] = searchValue.value;
+
+    const response = await axios.get('http://localhost:3000/admin/search-students', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params,
+    });
+    students.value = response.data; // Populate the students list
+  } catch (error) {
+    console.error('Error searching students:', error);
+  }
+};
+
+const resetSearch = () => {
+  searchBy.value = 'studentId';
+  searchValue.value = '';
+  students.value = [];
+};
+</script>
   
   <style scoped>
   .find-student {
