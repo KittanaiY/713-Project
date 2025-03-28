@@ -51,11 +51,21 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { useLoginStore } from '@/stores/login'; // Import the login store
+import type { Student } from '@/type'; // Import the Student type
 
 const loginStore = useLoginStore(); // Access the login store
-const senderId = ref(loginStore.user?.studentId || ''); // Use studentId as senderId for students
-const studentId = ref(loginStore.user?.studentId || ''); // Get studentId from the login store
-const advisorId = ref(loginStore.user?.advisorId || ''); // Get advisorId from the login store
+const router = useRouter();
+
+// Explicitly check the role of the user and extract studentId and advisorId
+const studentId = ref<string>('');
+const advisorId = ref<number | null>(null);
+
+if (loginStore.user?.role === 'STUDENT') {
+  const student = loginStore.user as Student;
+  studentId.value = student.studentId;
+  advisorId.value = student.advisorId;
+}
+
 const content = ref('');
 interface Comment {
   id: number;
@@ -64,7 +74,6 @@ interface Comment {
 }
 
 const comments = ref<Comment[]>([]);
-const router = useRouter();
 
 const fetchComments = async () => {
   try {
@@ -86,19 +95,11 @@ const submitForm = async () => {
     return;
   }
 
-  // Log the data being sent to the backend
-  console.log('Submitting comment:', {
-    senderId: senderId.value,
-    studentId: studentId.value,
-    advisorId: advisorId.value,
-    content: content.value,
-  });
-
   try {
     const response = await axios.post(
       'http://localhost:3000/comments/add-comment',
       {
-        senderId: senderId.value, // Ensure senderId is included
+        senderId: studentId.value,
         studentId: studentId.value,
         advisorId: advisorId.value,
         content: content.value,

@@ -27,39 +27,45 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { useLoginStore } from '@/stores/login'; // Import the login store
+import type { Student } from '@/type'; // Import the Student type
+
+const loginStore = useLoginStore(); // Access the login store
+const router = useRouter();
+
+// Explicitly check the role of the user and extract studentId
+const studentId = ref<string>('');
+
+if (loginStore.user?.role === 'STUDENT') {
+  const student = loginStore.user as Student;
+  studentId.value = student.studentId;
+}
 
 const subject = ref('');
 const requestedDate = ref('');
-const advisorId = ref('');
-const router = useRouter();
-const loginStore = useLoginStore(); // Access the login store
 
-const submitForm = async () => {
+const submitAppointment = async () => {
+  if (!studentId.value || !subject.value || !requestedDate.value) {
+    alert('Please fill in all fields.');
+    return;
+  }
+
   try {
-    // Extract student details from the login store
-    const student = loginStore.user;
-    if (!student || student.role !== 'STUDENT') {
-      alert('Unable to retrieve student information. Please log in again.');
-      return;
-    }
-
-    // Prepare the data to match the structure in appointmentService
-    const appointmentData = {
-      subject: subject.value,
-      requestedDate: new Date(requestedDate.value), // Convert to Date object
-      advisorId: Number(advisorId.value), // Ensure advisorId is a number
-      studentId: student.studentId, // Use the logged-in student's ID
-    };
-
-    // Send the appointment data to the backend
-    const response = await axios.post('http://localhost:3000/appointments/create-appointment', appointmentData, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('authToken')}`, // Include the auth token
+    const response = await axios.post(
+      'http://localhost:3000/appointments/create-appointment',
+      {
+        studentId: studentId.value,
+        subject: subject.value,
+        requestedDate: requestedDate.value,
       },
-    });
-
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        },
+      }
+    );
     alert('Appointment created successfully');
-    console.log('Created appointment:', response.data);
+    subject.value = '';
+    requestedDate.value = '';
   } catch (error) {
     console.error('Error creating appointment:', error);
     alert('Failed to create appointment');
@@ -67,7 +73,7 @@ const submitForm = async () => {
 };
 
 const returnToDashboard = () => {
-  router.push('/student/dashboard'); // Redirect to the student dashboard
+  router.push('/student/dashboard');
 };
 </script>
 
