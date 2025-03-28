@@ -26,14 +26,22 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCommentStore } from '@/stores/comment';
 import { useLoginStore } from '@/stores/login';
+import type { Advisor, Student, Admin } from '@/type'; // Import relevant types
 
 const router = useRouter();
 const commentStore = useCommentStore();
 const loginStore = useLoginStore();
 const comments = ref(commentStore.comments);
 
-// Get the current advisor's ID from the login store
-const currentAdvisorId = loginStore.token ? loginStore.user?.id : null;
+// Get the current user's ID based on their role
+let currentUserId: number | null = null;
+if (loginStore.user?.role === 'ADVISOR') {
+  currentUserId = (loginStore.user as Advisor).id;
+} else if (loginStore.user?.role === 'STUDENT') {
+  currentUserId = (loginStore.user as Student).advisorId; // Example: Use advisorId for students
+} else if (loginStore.user?.role === 'ADMIN') {
+  currentUserId = (loginStore.user as Admin).id;
+}
 
 const fetchComments = async () => {
   await commentStore.fetchCommentsForAdvisor(); // Fetch comments for the logged-in advisor
