@@ -45,11 +45,10 @@
   <script setup lang="ts">
   import { ref } from 'vue';
   import axios from 'axios';
-  import { Student } from '@/type';
-
+  
   const searchBy = ref('studentId'); // Default search by studentId
   const searchValue = ref('');
-  const students = ref<Student[]>([]);
+  const students = ref([]);
   
   const searchStudents = async () => {
     try {

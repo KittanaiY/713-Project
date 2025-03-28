@@ -46,17 +46,12 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import type { Student, Comment } from '@/type'; // Import the Student and Comment types
 
-const studentId = ref('');
-const content = ref('');
-interface Comment {
-  id: number;
-  studentId: string;
-  content: string;
-}
-
-const comments = ref<Comment[]>([]);
-const students = ref([]); // List of students associated with the advisor
+const studentId = ref<string>(''); // Ref for selected student ID
+const content = ref<string>(''); // Ref for comment content
+const students = ref<Student[]>([]); // Explicitly define the type as an array of Student
+const comments = ref<Comment[]>([]); // Explicitly define the type as an array of Comment
 const router = useRouter();
 
 const fetchStudents = async () => {
@@ -80,7 +75,7 @@ const fetchComments = async () => {
         Authorization: `Bearer ${localStorage.getItem('authToken')}`,
       },
     });
-    comments.value = response.data;
+    comments.value = response.data; // Populate the comments list
   } catch (error) {
     console.error('Error fetching comments:', error);
     alert('Failed to fetch comments.');
@@ -101,7 +96,7 @@ const submitForm = async () => {
         },
       }
     );
-    comments.value.push(response.data);
+    comments.value.push(response.data); // Add the new comment to the list
     alert('Comment added successfully');
     studentId.value = '';
     content.value = '';
@@ -118,7 +113,7 @@ const deleteComment = async (id: number) => {
         Authorization: `Bearer ${localStorage.getItem('authToken')}`,
       },
     });
-    comments.value = comments.value.filter((comment) => comment.id !== id);
+    comments.value = comments.value.filter((comment) => comment.id !== id); // Remove the deleted comment
     alert('Comment deleted successfully');
   } catch (error) {
     console.error('Error deleting comment:', error);
@@ -127,12 +122,12 @@ const deleteComment = async (id: number) => {
 };
 
 const returnToDashboard = () => {
-  router.push('/advisor/dashboard');
+  router.push('/advisor/dashboard'); // Navigate back to the dashboard
 };
 
 onMounted(() => {
   fetchStudents(); // Fetch students when the component is mounted
-  fetchComments();
+  fetchComments(); // Fetch comments when the component is mounted
 });
 </script>
 
