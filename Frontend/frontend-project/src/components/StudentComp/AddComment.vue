@@ -56,12 +56,14 @@ import type { Student } from '@/type'; // Import the Student type
 const loginStore = useLoginStore(); // Access the login store
 const router = useRouter();
 
-// Explicitly check the role of the user and extract studentId and advisorId
+// Explicitly check the role of the user and extract senderId, studentId, and advisorId
+const senderId = ref<string>('');
 const studentId = ref<string>('');
 const advisorId = ref<number | null>(null);
 
 if (loginStore.user?.role === 'STUDENT') {
   const student = loginStore.user as Student;
+  senderId.value = student.studentId; // Set senderId to the student's ID
   studentId.value = student.studentId;
   advisorId.value = student.advisorId;
 }
@@ -99,7 +101,7 @@ const submitForm = async () => {
     const response = await axios.post(
       'http://localhost:3000/comments/add-comment',
       {
-        senderId: studentId.value,
+        senderId: senderId.value,
         studentId: studentId.value,
         advisorId: advisorId.value,
         content: content.value,

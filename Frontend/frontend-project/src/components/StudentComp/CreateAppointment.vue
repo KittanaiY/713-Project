@@ -32,19 +32,21 @@ import type { Student } from '@/type'; // Import the Student type
 const loginStore = useLoginStore(); // Access the login store
 const router = useRouter();
 
-// Explicitly check the role of the user and extract studentId
+// Explicitly check the role of the user and extract studentId and advisorId
 const studentId = ref<string>('');
+const advisorId = ref<string>(''); // Define advisorId as a string
 
 if (loginStore.user?.role === 'STUDENT') {
   const student = loginStore.user as Student;
   studentId.value = student.studentId;
+  advisorId.value = student.advisorId.toString(); // Convert advisorId to a string
 }
 
 const subject = ref('');
 const requestedDate = ref('');
 
-const submitAppointment = async () => {
-  if (!studentId.value || !subject.value || !requestedDate.value) {
+const submitForm = async () => {
+  if (!studentId.value || !advisorId.value || !subject.value || !requestedDate.value) {
     alert('Please fill in all fields.');
     return;
   }
@@ -54,6 +56,7 @@ const submitAppointment = async () => {
       'http://localhost:3000/appointments/create-appointment',
       {
         studentId: studentId.value,
+        advisorId: advisorId.value,
         subject: subject.value,
         requestedDate: requestedDate.value,
       },
