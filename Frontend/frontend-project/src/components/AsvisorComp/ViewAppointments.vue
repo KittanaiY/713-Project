@@ -31,18 +31,19 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import type { Appointment } from '@/type'; // Import the Appointment type
 
-const appointments = ref([]);
+const appointments = ref<Appointment[]>([]); // Explicitly define the type as an array of Appointment
 const router = useRouter();
 
 const fetchAppointments = async () => {
   try {
     const response = await axios.get('http://localhost:3000/appointments/appointments', {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`, // Include the auth token
       },
     });
-    appointments.value = response.data;
+    appointments.value = response.data; // Populate the appointments list
   } catch (error) {
     console.error('Error fetching appointments:', error);
     alert('Failed to fetch appointments.');
@@ -50,7 +51,7 @@ const fetchAppointments = async () => {
 };
 
 const goToDashboard = () => {
-  router.push('/advisor/dashboard');
+  router.push('/advisor/dashboard'); // Redirect to the advisor dashboard
 };
 
 onMounted(() => {
